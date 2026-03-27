@@ -1,0 +1,32 @@
+USVParameters
+{
+  Xu                -0.118907
+  Xu_absu   -0.113083
+  Xvr              0.726955
+  Xrr               -0.053085
+  Yv                0.157661
+  Yr                0.036454
+  Yv_absv    -0.745666
+  Yr_absr     -0.034798
+  Yuv             -0.221451
+  Yur              -0.067845
+  Yabsv_r         0.0
+  Yv_absr         0.0
+  Mv               1.109963
+  Mr               -0.220987
+  Mv_absv  -2.712027
+  Mr_absr   -0.208273
+  Muv            -0.650836
+  Mur            -0.668338
+  Mabsv_r       0.0
+  Mv_absr       0.0
+  Thrust_l   1.049654
+  Thrust_r   0.728058
+  Torque_l  -1.995285
+  Torque_r 2.104452
+  maxInput 0.5
+  maxInputRate 6.0
+  maxSurgeSpeed 2.0
+  minSurgeSpeed -0.5
+  maxAngularSpeed 3.14
+}

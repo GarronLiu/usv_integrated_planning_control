@@ -1,0 +1,70 @@
+trackingCost
+{
+    name "tracking cost quadratic"
+    kind "quadratic"   
+    type 0              ; 0 = intermediate, 1 = final
+
+    weights
+    {
+      Q
+      {
+        scaling 50.0
+        (0,0) 10
+        (1,1) 10
+        (2,2) 20
+        (3,3) 20
+        (4,4) 0
+        (5,5) 0
+        (6,6) 0
+        (7,7) 0
+        (8,8) 5
+        (9,9) 5
+      }
+      R
+      {
+        scaling 50.0
+        (0,0) 1.0
+        (1,1) 1.0
+      }
+    }
+}
+
+
+finalCost
+{
+    name "final cost quadratic"
+    kind "quadratic"   
+    type 1              ; 0 = intermediate, 1 = final
+
+    weights
+    {
+      Q
+      {
+        scaling 10.0
+        (0,0) 10
+        (1,1) 10
+        (2,2) 10
+        (3,3) 10
+        (4,4) 0
+        (5,5) 2
+        (6,6) 0
+        (7,7) 0
+        (8,8) 5
+        (9,9) 5
+      }
+      R
+      {
+        scaling 20.0
+        (0,0) 1
+        (1,1) 1
+      }
+      x_des
+      {  
+        (0,0) 1
+        (1,0) 0
+        (2,0) 0
+        (3,0) 0
+        (4,0) 0
+      }
+    }
+}

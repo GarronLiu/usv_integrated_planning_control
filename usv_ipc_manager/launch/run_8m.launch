@@ -1,0 +1,89 @@
+<launch>
+    <arg name="project" default="usv_ipc_manager"/>
+    <!-- parameter -->
+    <param name="/use_sim_time" value="false" /> 
+
+    <!-- Parameters for 2D vehicle centric map -->
+    <rosparam>
+        vehicleCentricMap/obstaclesInflation: 4.0
+    </rosparam>
+
+    <!-- Parameters for path searching -->
+    <rosparam>
+        search/max_tau : 0.6
+        search/init_max_tau : 0.8
+        search/max_vel : 2.0
+        search/max_acc : 3.0
+        search/w_time  : 10.0
+        search/horizon  : 40.0
+        search/lambda_heu  : 10.0
+        search/resolution_astar  : 0.5
+        search/time_resolution  : 0.8
+        search/margin  : 0.2
+        search/allocate_num  : 100000
+        search/check_num  : 10
+    </rosparam>
+
+    <!-- Parameters for Bspline Trajectory Optimization -->
+    <rosparam>
+        optimization/lambda1: 5.0 <!-- smoothness weight-->
+        optimization/lambda2: 10.0 <!-- distance weight -->
+        optimization/lambda3: 0.00001
+        optimization/lambda4: 0.01
+        optimization/lambda7: 100.0
+        optimization/dist0: 2.0
+        optimization/max_vel: 2.0
+        optimization/max_acc: 3.0
+        optimization/control_points_distance: 0.5
+
+        optimization/algorithm1: 15
+        optimization/algorithm2: 11
+
+        optimization/max_iteration_num1: 2
+        optimization/max_iteration_num2: 300
+        optimization/max_iteration_num3: 200
+        optimization/max_iteration_num4: 200
+
+        optimization/max_iteration_time1: 0.0001
+        optimization/max_iteration_time2: 0.005
+        optimization/max_iteration_time3: 0.003
+        optimization/max_iteration_time4: 0.003
+
+        optimization/order: 3
+    </rosparam>
+
+    <!-- Parameters for USV IPC Manager -->
+    <rosparam>
+        manager/max_vel: 2.0
+        manager/max_acc: 3.0
+        manager/control_points_distance: 0.5
+        manager/emergency_distance: 10.0
+        manager/thresh_replan: 10.0
+        manager/thresh_no_replan: 3.0
+        manager/goal_tolerance: 5.0
+    </rosparam>
+
+    <!-- Parameters for USV Trajectory Tracker -->
+    <rosparam>
+        tracker/ControlFrequency: 20.0
+        tracker/ControlDelay: 0.5
+        tracker/NmpcPredictionHorizon: 5.0
+        tracker/NMPCEnableFlag: false <!-- false: 发布位置控制指令到fcu, true:发布nmpc求解的速度和角速率控制指令给fcu -->
+    </rosparam>
+
+    <!-- Running Trajectory Tracker Node-->
+    <include file="$(find usv_opt_tracker)/launch/run_8m.launch"/>
+    
+    <!-- Running USV IPC Node-->
+    <node pkg="$(arg project)"      type="$(arg project)_node"   name="$(arg project)_node"    output="screen"     respawn="true">
+    <remap from="/odometry"   to="/mavros/local_position/odom"/>
+    </node>
+    <node pkg="rviz" type="rviz" name="$(arg project)_rviz" args="-d $(find usv_ipc_manager)/config/rviz.rviz" />
+
+    <!-- Runing State Estimator Node -->
+    <!-- <include file="$(find eskf_estimator)/launch/run.launch"/> -->
+    <node pkg="ekf_origin_acquire"      type="ekf_origin_acquire_node"   name="ekf_origin_acquire_node"    output="screen"     respawn="true"/>
+
+    <!-- dynamic occupancy grid map -->
+    <include file="$(find dynamic_occupancy_grid)/launch/run_8m.launch"/>
+</launch>

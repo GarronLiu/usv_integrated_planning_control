@@ -1,0 +1,142 @@
+<launch>
+    <arg name="project" default="usv_ipc_manager"/>
+    <!-- parameter -->
+    <param name="/use_sim_time" value="false" /> 
+
+    <!--  Parameters for ESKF Filter -->
+    <rosparam>
+        eskf/IMUTopic: "/mavros/imu/data"
+        eskf/Pose_Source: 0
+        eskf/GPSTopic: "/mavros/global_position/global"
+        eskf/OdomTopic: "/odometry"
+        eskf/imuAccNoise: 1.0300575528779436e-02
+        eskf/imuGyrNoise: 1.9543319451727475e-03 
+        eskf/imuAccBiasN: 8.3689507540243087e-05
+        eskf/imuGyrBiasN: 2.7741628081339902e-05
+
+        eskf/xCovariance: 0.01
+        eskf/yCovariance: 0.01
+        eskf/zCovariance: 0.05
+        eskf/magCovariance: 0.01
+
+        eskf/init_state_std: [
+        0.001,0.001,0.001,
+        0.001,0.001,0.001,
+        0.00005,0.00005,0.00005,
+        0.001,0.001,0.001,
+        0.001,0.001,0.001,
+        0.001,0.001,0.001
+        ]
+    </rosparam>
+
+    <!-- Parameters for 2D vehicle centric map -->
+    <rosparam>
+        vehicleCentricMap/mapSize_x: 100.0
+        vehicleCentricMap/mapSize_y: 100.0
+        vehicleCentricMap/mapResolution: 0.2
+        vehicleCentricMap/obstaclesInflation: 1.0
+        vehicleCentricMap/slidingDistance: 20.0 <!-- 当前位置相对上次更新地图原点超过slidingDistance距离后，会执行地图滑窗操作 -->
+        vehicleCentricMap/obstaclesInflation: 0.2
+        vehicleCentricMap/detectionRange: 30.0 <!-- lidar探测范围，也决定了当前帧占据和ESDF地图更新的范围 -->
+        vehicleCentricMap/angleResolutionDegree: 0.2 <!-- lidar的角度分辨率, 也可适当放大实现角度降采样 -->
+        vehicleCentricMap/sensorHeightLimitUpper: 0.6 <!-- 高度约束 -->
+        vehicleCentricMap/sensorHeightLimitDown: -0.5 
+        <!-- raycast和贝叶斯占据概率估计相关参数 -->
+        vehicleCentricMap/p_hit: 0.90 <!--这个值越大，对动态障碍物越灵敏 -->
+        vehicleCentricMap/p_miss: 0.25  <!--这个值越大，动态障碍物留存时间越长 -->
+        vehicleCentricMap/p_min: 0.12
+        vehicleCentricMap/p_max: 0.97
+        vehicleCentricMap/p_occ: 0.80
+        vehicleCentricMap/ifCloudNeedTransform: true
+    </rosparam>
+
+    <!-- Parameters for path searching -->
+    <rosparam>
+        search/max_tau : 0.6
+        search/init_max_tau : 0.8
+        search/max_vel : 2.0
+        search/max_acc : 3.0
+        search/w_time  : 10.0
+        search/horizon  : 40.0
+        search/lambda_heu  : 10.0
+        search/resolution_astar  : 0.2
+        search/time_resolution  : 0.8
+        search/margin  : 0.2
+        search/allocate_num  : 100000
+        search/check_num  : 10
+    </rosparam>
+
+    <!-- Parameters for Bspline Trajectory Optimization -->
+    <rosparam>
+        optimization/lambda1: 20.0 <!-- smoothness weight-->
+        optimization/lambda2: 10.0 <!-- distance weight -->
+        optimization/lambda3: 0.00001
+        optimization/lambda4: 0.01
+        optimization/lambda7: 100.0
+        optimization/dist0: 2.0
+        optimization/max_vel: 2.0
+        optimization/max_acc: 3.0
+        optimization/control_points_distance: 0.5
+
+        optimization/algorithm1: 15
+        optimization/algorithm2: 11
+
+        optimization/max_iteration_num1: 2
+        optimization/max_iteration_num2: 300
+        optimization/max_iteration_num3: 200
+        optimization/max_iteration_num4: 200
+
+        optimization/max_iteration_time1: 0.0001
+        optimization/max_iteration_time2: 0.005
+        optimization/max_iteration_time3: 0.003
+        optimization/max_iteration_time4: 0.003
+
+        optimization/order: 3
+    </rosparam>
+
+    <!-- Parameters for USV Path Generator -->
+    <rosparam>
+        path_generator/MaxVel: 2.0
+        path_generator/MinTurnRadius: 1.0
+    </rosparam>
+
+    <!-- Parameters for USV Trajectory Tracker -->
+    <rosparam>
+        tracker/ControlFrequency: 20.0
+        tracker/ControlDelay: 0.5
+        tracker/NmpcPredictionHorizon: 20.0
+        tracker/NMPCEnableFlag: false <!-- false: 发布位置控制指令到fcu, true:发布nmpc求解的速度和角速率控制指令给fcu -->
+    </rosparam>
+
+    <!-- Parameters of  Obstalces Generation for Planning Algorithm Validation -->
+    <rosparam>
+        map_genearator/x_size: 400.0
+        map_genearator/y_size: 400.0
+        map_genearator/z_size: 5.0
+        map_genearator/obs_num: 30
+        map_genearator/resolution: 0.2
+        map_genearator/ObstacleShape/lower_rad: 2.0
+        map_genearator/ObstacleShape/upper_rad: 5.0
+        map_genearator/ObstacleShape/lower_hei: 3.0
+        map_genearator/ObstacleShape/upper_hei: 7.0
+        map_genearator/sensing/radius: 20.0
+        map_genearator/sensing/rate: 10.0
+    </rosparam>
+
+    <!-- Running Trajectory Tracker Node-->
+    <include file="$(find usv_opt_tracker)/launch/run_sim.launch"/>
+    
+    <!-- Running USV IPC Node-->
+    <node pkg="$(arg project)"      type="usv_path_generator_node"   name="usv_path_generator_node"    output="screen"     respawn="true">
+    <remap from="/odometry"   to="/mavros/local_position/odom"/>
+    <remap from="/goal"   to="/manager/goal"/>
+    </node>
+    <node pkg="rviz" type="rviz" name="$(arg project)_rviz" args="-d $(find usv_ipc_manager)/config/rviz.rviz" />
+
+    <!-- Runing State Estimator Node -->
+    <include file="$(find eskf_estimator)/launch/run.launch"/>
+    <node pkg="ekf_origin_acquire"      type="ekf_origin_acquire_node"   name="ekf_origin_acquire_node"    output="screen"     respawn="true"/>
+
+    <!-- dynamic occupancy grid map -->
+    <include file="$(find dynamic_occupancy_grid)/launch/run_sim.launch"/>
+</launch>

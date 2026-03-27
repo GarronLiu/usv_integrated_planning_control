@@ -1,0 +1,45 @@
+<launch>
+
+    <arg name="project" default="dynamic_occupancy_grid"/>
+
+    <!--<node pkg="rviz" type="rviz" name="$(arg project)_rviz" args="-d $(find usv_ipc_manager)/config/rviz.rviz" />-->
+    <rosparam>
+        DynamicOccupancyGrid/mapLength: 100.0
+        DynamicOccupancyGrid/mapResolution: 0.5
+        DynamicOccupancyGrid/maxRange: 50.0<!-- lidar探测范围 -->
+        DynamicOccupancyGrid/horizontalScanNum: 180
+        DynamicOccupancyGrid/sensorHeightLimitUpper: 1
+        DynamicOccupancyGrid/sensorHeightLimitDown: -2.0
+        DynamicOccupancyGrid/sensorPitch: 0.0
+        DynamicOccupancyGrid/ifCloudNeedTransform: true
+
+        DynamicOccupancyGrid/PHDFilter/particles/particle_count: 300000
+        DynamicOccupancyGrid/PHDFilter/particles/new_born_particle_count: 30000
+        DynamicOccupancyGrid/PHDFilter/particles/persistence_probability: 0.99
+        DynamicOccupancyGrid/PHDFilter/particles/process_noise_position: 0.1
+        DynamicOccupancyGrid/PHDFilter/particles/process_noise_velocity: 1.0
+        DynamicOccupancyGrid/PHDFilter/particles/birth_probability: 0.025
+        DynamicOccupancyGrid/PHDFilter/particles/stddev_velocity: 15.0
+        DynamicOccupancyGrid/PHDFilter/particles/init_max_velocity: 15.0
+        DynamicOccupancyGrid/PHDFilter/particles/freespace_discount: 0.01
+        DynamicOccupancyGrid/PHDFilter/laser/fov: 360.0
+        DynamicOccupancyGrid/PHDFilter/laser/stddev_range: 0.25
+    
+        <!-- raycast和贝叶斯占据概率估计相关参数 -->
+        DynamicOccupancyGrid/raycast/p_hit: 0.90 <!--这个值越大，对动态障碍物越灵敏 -->
+        DynamicOccupancyGrid/raycast/p_miss: 0.35 <!--这个值越大，动态障碍物留存时间越长 -->
+        DynamicOccupancyGrid/raycast/p_min: 0.12
+        DynamicOccupancyGrid/raycast/p_max: 0.90
+        DynamicOccupancyGrid/raycast/p_occ: 0.85
+        DynamicOccupancyGrid/raycast/ifCloudNeedTransform: true
+
+        DynamicOccupancyGrid/PHDFilter/predict/minVelocityThreshold: 1.0
+        DynamicOccupancyGrid/PHDFilter/predict/timeSpan: 0.5
+    </rosparam>
+    
+    <node pkg="$(arg project)" type="$(arg project)_node"     name="$(arg project)_node"       output="screen" respawn="true">
+        <remap from="/cloud" to = "/livox/lidar"/>
+        <remap from="/odometry" to = "/mavros/local_position/odom"/>
+    </node>
+
+</launch>

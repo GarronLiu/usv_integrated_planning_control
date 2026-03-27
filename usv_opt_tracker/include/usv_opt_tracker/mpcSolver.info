@@ -1,0 +1,16 @@
+mpc
+{
+    stateForwardIntegration  true
+    stateForwardIntegration_dt 0.05
+    stateForwardIntegratorType 0
+    additionalDelayUs 0
+    fixedDelayUs 0
+    timeHorizon 5.0
+    postTruncation  true
+    printSummary false
+    measureDelay true
+    delayMeasurementMultiplier 1.0
+    mpc_mode FIXED_FINAL_TIME
+    coldStart false
+    useExternalTiming false
+}

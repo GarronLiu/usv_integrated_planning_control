@@ -1,0 +1,31 @@
+    <launch>
+    <!--  Parameters for ESKF Filter -->
+    <rosparam>
+        eskf/Pose_Source: 0     <!-- 0: gps, 1: slam odom -->
+        eskf/imuAccNoise: 1.0300575528779436e-02
+        eskf/imuGyrNoise: 1.9543319451727475e-03 
+        eskf/imuAccBiasN: 8.3689507540243087e-05
+        eskf/imuGyrBiasN: 2.7741628081339902e-05
+
+        eskf/xCovariance: 0.01
+        eskf/yCovariance: 0.01
+        eskf/zCovariance: 0.05
+        eskf/magCovariance: 0.01
+
+        eskf/init_state_std: [
+        0.001,0.001,0.001,
+        0.001,0.001,0.001,
+        0.00005,0.00005,0.00005,
+        0.001,0.001,0.001,
+        0.001,0.001,0.001,
+        0.001,0.001,0.001
+        ]
+    </rosparam>
+
+    <node pkg="eskf_estimator" type="usv_estimator_node" name="usv_estimator_node" output="screen" respawn="true">
+    <remap from="/imu/data"   to="/mavros/imu/data"/> 
+    <remap from="/gps"   to="/mavros/global_position/global"/> 
+    <remap from="/odom"   to="/odom"/> 
+    </node>
+
+    </launch>

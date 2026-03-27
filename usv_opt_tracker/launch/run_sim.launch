@@ -1,0 +1,16 @@
+<launch>
+    <arg name="project" default="usv_opt_tracker"/>
+    <!-- parameter -->
+    <param name="/use_sim_time" value="false" /> 
+    <rosparam>
+        ControlFrequency: 20
+        CommandType: 0
+    </rosparam>
+    <!-- Running USV tracker Node-->
+    <node pkg="$(arg project)"      type="$(arg project)_node"   name="$(arg project)_node"    output="screen"     respawn="true">
+    <remap from="/odom"   to="/mavros/local_position/odom"/>
+    <remap from="/trajectory"   to="/manager/trajectory/tracking"/>   
+    </node>
+
+</launch>
+

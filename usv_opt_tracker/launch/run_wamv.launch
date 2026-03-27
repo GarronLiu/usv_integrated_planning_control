@@ -1,0 +1,22 @@
+<launch>
+    <arg name="project" default="usv_opt_tracker"/>
+    <!-- parameter -->
+    <param name="/use_sim_time" value="false" /> 
+    <rosparam>
+        ControlFrequency: 20
+        CommandType: 1
+        GPUpateEnable: false
+        GPREnable: true
+    </rosparam>
+    <!-- WamV state convertor -->
+    <node pkg="$(arg project)"      type="wamv_state_converter_node"   name="wamv_state_converter_node"    output="screen"     respawn="true"/>
+    <!-- Running USV tracker Node-->
+    <node pkg="$(arg project)"      type="$(arg project)_node"   name="$(arg project)_node"    output="screen"     respawn="true">
+    <remap from="/odom"   to="/wamv/odom"/>
+    <remap from="/trajectory"   to="/manager/trajectory/tracking"/>   
+    </node>
+    <node pkg="rviz" type="rviz" name="$(arg project)_rviz" args="-d $(find usv_opt_tracker)/launch/wamv.rviz" />
+    <!-- Dynamic Reconfigure Server -->
+    <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_reconfigure_server" />
+</launch>
+
