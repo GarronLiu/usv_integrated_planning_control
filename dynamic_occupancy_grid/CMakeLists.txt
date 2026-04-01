@@ -14,7 +14,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.7 REQUIRED)
-find_package(DOGM REQUIRED)
+set(DOGM_DIR "/home/garronliu/test_workspace/dynamic-occupancy-grid-map/install/share/DOGM")
+find_package(DOGM REQUIRED PATHS ${DOGM_DIR})
 
 find_package(OpenCV 3.2.0 QUIET)
 if (NOT OpenCV_FOUND)
