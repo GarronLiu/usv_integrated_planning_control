@@ -31,4 +31,5 @@ roslaunch vrx_gazebo vrx.launch
 1. 完善依赖安装过程流程描述
 2. 规范化软件启动流程
 3. Fork VRX gazebo v2.4.1, 搭建多个不同的场景，以验证算法的表现
+4. 将DOGM的功能包集成进来
 
